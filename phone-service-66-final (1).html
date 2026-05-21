@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --accent:     #A200BB;
+  --bg:         #000000;
+  --surface:    #0f0f0f;
+  --surface2:   #1a1a1a;
+  --text:       #ffffff;
+  --text-muted: #888888;
+  --border:     rgba(162,0,187,0.2);
+  --radius:     14px;
+}
+html, body {
+  background: var(--bg);
+  font-family: "Roboto Slab", serif;
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+}
+#ps66 { width: 100%; padding: 24px 20px; }
+#ps66-search-page { display: block; }
+#ps66-detail-page { display: none; }
+
+.ps66-label {
+  font-size: .95rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  text-align: center;
+  letter-spacing: .01em;
+}
+.ps66-contact-msg {
+  font-family: "Roboto Slab", serif;
+  font-size: .88rem;
+  font-weight: 400;
+  color: #ffffff;
+  text-align: center;
+  margin-top: 16px;
+  line-height: 1.6;
+  opacity: .85;
+}
+
+.ps66-search-box { position: relative; width: 100%; max-width: 580px; margin: 0 auto; }
+.ps66-search-box svg.ico {
+  position: absolute;
+  left: 16px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent);
+  pointer-events: none;
+  z-index: 2;
+}
+#ps66-input {
+  width: 100%;
+  padding: 15px 16px 15px 48px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: "Roboto Slab", serif;
+  font-size: .98rem;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  caret-color: var(--accent);
+}
+#ps66-input::placeholder { color: var(--text-muted); font-weight: 300; }
+#ps66-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(162,0,187,0.15);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+#ps66-suggestions {
+  position: absolute;
+  top: 100%; left: 0; right: 0;
+  background: var(--surface);
+  border: 1.5px solid var(--accent);
+  border-top: none;
+  border-bottom-left-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
+  overflow: hidden;
+  z-index: 9999;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.8);
+  max-height: 300px;
+  overflow-y: auto;
+}
+#ps66-suggestions:empty { display: none; }
+.ps66-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background .12s;
+}
+.ps66-item:last-child { border-bottom: none; }
+.ps66-item:hover { background: rgba(162,0,187,0.1); }
+.ps66-item-icon {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ps66-item-icon svg { color: #fff; }
+.ps66-item-name { font-size: .9rem; font-weight: 500; flex: 1; text-transform: capitalize; }
+.ps66-item-count { font-size: .7rem; color: var(--text-muted); font-weight: 300; }
+.ps66-item-arrow { color: var(--text-muted); opacity: .5; }
+
+.ps66-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text-muted);
+  font-size: .85rem;
+  font-weight: 400;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0 0 20px;
+  transition: color .15s;
+}
+.ps66-back:hover { color: var(--accent); }
+.ps66-device-header {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+}
+.ps66-device-icon {
+  width: 46px; height: 46px;
+  background: var(--accent);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ps66-device-icon svg { color: #fff; }
+.ps66-device-name { font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 700; text-transform: capitalize; }
+.ps66-device-sub { font-size: .8rem; color: var(--text-muted); margin-top: 3px; font-weight: 300; }
+.ps66-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.ps66-legend-item { display: flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--text-muted); font-weight: 300; }
+.ps66-dot { width: 8px; height: 8px; border-radius: 50%; }
+.ps66-dot.eco { background: #fff; }
+.ps66-dot.prime { background: #aaa; }
+.ps66-dot.original { background: var(--accent); }
+.ps66-table {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.ps66-table-head {
+  display: grid;
+  grid-template-columns: 1fr 88px 88px 88px;
+  gap: 4px; padding: 9px 14px;
+  background: var(--surface2);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.ps66-table-head span {
+  font-size: .62rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  text-align: center; white-space: nowrap;
+}
+.ps66-table-head span:first-child { text-align: left; color: var(--text-muted); }
+.ps66-table-head span.eco { color: #fff; }
+.ps66-table-head span.prime { color: #aaa; }
+.ps66-table-head span.original { color: var(--accent); }
+.ps66-row {
+  display: grid;
+  grid-template-columns: 1fr 88px 88px 88px;
+  align-items: center;
+  gap: 4px; padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background .15s;
+  animation: fadeUp .2s ease both;
+}
+.ps66-row:last-child { border-bottom: none; }
+.ps66-row:hover { background: rgba(255,255,255,0.02); }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(5px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.ps66-row-name {
+  font-size: .85rem; font-weight: 400; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 6px;
+}
+.ps66-price { text-align: center; font-weight: 600; font-size: .85rem; white-space: nowrap; }
+.ps66-price.eco { color: #fff; }
+.ps66-price.prime { color: #aaa; }
+.ps66-price.original { color: var(--accent); }
+.ps66-price.na { color: #444; font-size: .7rem; font-weight: 300; }
+.ps66-call {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; width: 100%; padding: 16px;
+  background: var(--accent); border-radius: var(--radius);
+  color: #fff; font-family: "Roboto Slab", serif;
+  font-weight: 600; font-size: .98rem; text-decoration: none;
+  transition: opacity .2s, transform .15s;
+  box-shadow: 0 4px 24px rgba(162,0,187,0.35);
+}
+.ps66-call:hover { opacity: .9; transform: translateY(-1px); }
+.ps66-call-icon {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.ps66-call-text { display: flex; flex-direction: column; align-items: flex-start; }
+.ps66-call-label { font-size: .65rem; opacity: .85; letter-spacing: .06em; text-transform: uppercase; font-weight: 300; }
+.ps66-call-number { font-size: 1rem; font-weight: 700; letter-spacing: .03em; }
+@media (max-width: 480px) {
+  .ps66-table-head, .ps66-row { grid-template-columns: 1fr 66px 66px 66px; padding: 10px 11px; gap: 3px; }
+  .ps66-price { font-size: .76rem; }
+  .ps66-table-head span { font-size: .55rem; }
+  .ps66-row-name { font-size: .76rem; }
+}
+</style>
+</head>
+<body>
+<div id="ps66">
+
+  <!-- PAGE RECHERCHE -->
+  <div id="ps66-search-page">
+    <p class="ps66-label">Tapez votre modèle pour voir les prix de réparation</p>
+    <div class="ps66-search-box">
+      <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input id="ps66-input" type="text" placeholder="Ex : iPhone 13, iPhone 15 Pro…" autocomplete="off" spellcheck="false">
+      <div id="ps66-suggestions"></div>
+    </div>
+    <p class="ps66-contact-msg">Vous ne trouvez pas votre modèle ou votre réparation ? N'hésitez pas à me contacter, je réponds à toutes vos demandes et vous propose un devis rapide et sans engagement.</p>
+  </div>
+
+  <!-- PAGE DÉTAIL -->
+  <div id="ps66-detail-page">
+    <button class="ps66-back" id="ps66-back">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Retour
+    </button>
+    <div class="ps66-device-header">
+      <div class="ps66-device-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="5" y="2" width="14" height="20" rx="3"/>
+          <line x1="12" y1="18" x2="12.01" y2="18" stroke-linecap="round" stroke-width="2.5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="ps66-device-name" id="ps66-title"></div>
+        <div class="ps66-device-sub" id="ps66-sub"></div>
+      </div>
+    </div>
+    <div class="ps66-legend">
+      <div class="ps66-legend-item"><div class="ps66-dot eco"></div>Compatible</div>
+      <div class="ps66-legend-item"><div class="ps66-dot prime"></div>Premium</div>
+      <div class="ps66-legend-item"><div class="ps66-dot original"></div>Original</div>
+    </div>
+    <div class="ps66-table">
+      <div class="ps66-table-head">
+        <span>Réparation</span>
+        <span class="eco">Compatible</span>
+        <span class="prime">Premium</span>
+        <span class="original">Original</span>
+      </div>
+      <div id="ps66-rows"></div>
+    </div>
+    <a class="ps66-call" href="tel:+33667632200">
+      <div class="ps66-call-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.38 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+      </div>
+      <div class="ps66-call-text">
+        <span class="ps66-call-label">Prendre rendez-vous</span>
+        <span class="ps66-call-number">06 67 63 22 00</span>
+      </div>
+    </a>
+  </div>
+
+</div>
+<script>
+const ALL_DATA = [{"marque": "Apple", "modele": "iphone 7/7+", "pieces": {"Ecran": {"compatible": 58, "premium": 61, "original": 64}, "Batterie": {"compatible": 56, "premium": 59, "original": null}, "Connecteur de charge": {"compatible": 51, "premium": null, "original": null}, "Camera AR": {"compatible": 51, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 8/8+", "pieces": {"Ecran": {"compatible": 58, "premium": 64, "original": 77}, "Batterie": {"compatible": 56, "premium": 56, "original": null}, "Vitre AR": {"compatible": 52, "premium": null, "original": null}, "Connecteur de charge": {"compatible": 54, "premium": null, "original": null}, "Camera AR": {"compatible": 55, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone SE1", "pieces": {"Ecran": {"compatible": 60, "premium": null, "original": null}, "Batterie": {"compatible": 55, "premium": null, "original": null}, "Connecteur de charge": {"compatible": 51, "premium": null, "original": null}, "Camera AR": {"compatible": 53, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone X", "pieces": {"Ecran": {"compatible": 58, "premium": 81, "original": 101}, "Batterie": {"compatible": null, "premium": 58, "original": null}, "Vitre AR": {"compatible": 52, "premium": 54, "original": null}, "Connecteur de charge": {"compatible": 51, "premium": null, "original": null}, "Camera AR": {"compatible": 56, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "Iphone XS/XSmax", "pieces": {"Ecran": {"compatible": 60, "premium": 82, "original": 113}, "Batterie": {"compatible": null, "premium": 58, "original": null}, "Vitre AR": {"compatible": 52, "premium": 54, "original": null}, "Connecteur de charge": {"compatible": 51, "premium": null, "original": null}, "Camera AR": {"compatible": 63, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone XR", "pieces": {"Ecran": {"compatible": 60, "premium": 68, "original": 79}, "Batterie": {"compatible": null, "premium": 56, "original": null}, "Vitre AR": {"compatible": 52, "premium": 54, "original": null}, "Connecteur de charge": {"compatible": 52, "premium": null, "original": null}, "Camera AR": {"compatible": 58, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 11", "pieces": {"Ecran": {"compatible": 60, "premium": 68, "original": 90}, "Batterie": {"compatible": null, "premium": 57, "original": null}, "Vitre AR": {"compatible": 53, "premium": 55, "original": null}, "Connecteur de charge": {"compatible": 53, "premium": null, "original": null}, "Camera AR": {"compatible": 56, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 11 pro", "pieces": {"Ecran": {"compatible": 66, "premium": 94, "original": 113}, "Batterie": {"compatible": null, "premium": 59, "original": null}, "Vitre AR": {"compatible": null, "premium": 55, "original": null}, "Connecteur de charge": {"compatible": 57, "premium": null, "original": null}, "Camera AR": {"compatible": 72, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 11 pro max", "pieces": {"Ecran": {"compatible": 64, "premium": 84, "original": 153}, "Batterie": {"compatible": null, "premium": 59, "original": null}, "Vitre AR": {"compatible": null, "premium": 55, "original": null}, "Connecteur de charge": {"compatible": 64, "premium": null, "original": null}, "Camera AR": {"compatible": 72, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone SE2", "pieces": {"Ecran": {"compatible": 58, "premium": 64, "original": null}, "Batterie": {"compatible": null, "premium": 56, "original": null}, "Vitre AR": {"compatible": 52, "premium": null, "original": null}, "Connecteur de charge": {"compatible": 53, "premium": null, "original": null}, "Camera AR": {"compatible": 54, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 12", "pieces": {"Ecran": {"compatible": 64, "premium": 91, "original": 102}, "Batterie": {"compatible": 57, "premium": 63, "original": null}, "Vitre AR": {"compatible": null, "premium": 55, "original": null}, "Connecteur de charge": {"compatible": 53, "premium": null, "original": null}, "Camera AR": {"compatible": 61, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 12 mini", "pieces": {"Ecran": {"compatible": 63, "premium": 95, "original": 165}, "Batterie": {"compatible": null, "premium": 58, "original": null}, "Vitre AR": {"compatible": null, "premium": 55, "original": null}, "Connecteur de charge": {"compatible": 53, "premium": null, "original": null}, "Camera AR": {"compatible": 75, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 12 pro", "pieces": {"Ecran": {"compatible": 64, "premium": 88, "original": 102}, "Batterie": {"compatible": 57, "premium": 59, "original": null}, "Vitre AR": {"compatible": null, "premium": 55, "original": null}, "Connecteur de charge": {"compatible": 53, "premium": null, "original": null}, "Camera AR": {"compatible": 106, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 12 pro max", "pieces": {"Ecran": {"compatible": 77, "premium": 93, "original": 132}, "Batterie": {"compatible": null, "premium": 60, "original": null}, "Vitre AR": {"compatible": null, "premium": 55, "original": null}, "Connecteur de charge": {"compatible": 54, "premium": null, "original": null}, "Camera AR": {"compatible": 101, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 13", "pieces": {"Ecran": {"compatible": 71, "premium": 90, "original": 108}, "Batterie": {"compatible": null, "premium": 58, "original": null}, "Vitre AR": {"compatible": null, "premium": 55, "original": null}, "Connecteur de charge": {"compatible": 54, "premium": null, "original": null}, "Camera AR": {"compatible": 56, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 13 mini", "pieces": {"Ecran": {"compatible": 77, "premium": 80, "original": 156}, "Batterie": {"compatible": 58, "premium": 64, "original": null}, "Vitre AR": {"compatible": null, "premium": 55, "original": null}, "Connecteur de charge": {"compatible": 54, "premium": null, "original": null}, "Camera AR": {"compatible": 57, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 13 pro", "pieces": {"Ecran": {"compatible": 72, "premium": 98, "original": 123}, "Batterie": {"compatible": 60, "premium": 66, "original": 114}, "Vitre AR": {"compatible": null, "premium": 55, "original": null}, "Connecteur de charge": {"compatible": 54, "premium": null, "original": null}, "Camera AR": {"compatible": 107, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 13 pro max", "pieces": {"Ecran": {"compatible": 74, "premium": 93, "original": 146}, "Batterie": {"compatible": 61, "premium": 68, "original": 114}, "Vitre AR": {"compatible": null, "premium": 55, "original": null}, "Connecteur de charge": {"compatible": 55, "premium": null, "original": null}, "Camera AR": {"compatible": 107, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 14", "pieces": {"Ecran": {"compatible": 69, "premium": 91, "original": 118}, "Batterie": {"compatible": 59, "premium": 62, "original": 115}, "Vitre AR": {"compatible": null, "premium": 52, "original": null}, "Connecteur de charge": {"compatible": 54, "premium": null, "original": null}, "Camera AR": {"compatible": 76, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 14+", "pieces": {"Ecran": {"compatible": 77, "premium": 91, "original": 171}, "Batterie": {"compatible": null, "premium": 62, "original": 115}, "Vitre AR": {"compatible": 55, "premium": 84, "original": null}, "Connecteur de charge": {"compatible": 56, "premium": null, "original": null}, "Camera AR": {"compatible": 88, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 14 pro", "pieces": {"Ecran": {"compatible": 74, "premium": 98, "original": 171}, "Batterie": {"compatible": 60, "premium": 66, "original": 115}, "Vitre AR": {"compatible": null, "premium": 90, "original": null}, "Connecteur de charge": {"compatible": 56, "premium": null, "original": null}, "Camera AR": {"compatible": 82, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 14 pro max", "pieces": {"Ecran": {"compatible": 90, "premium": 98, "original": 270}, "Batterie": {"compatible": 62, "premium": 53, "original": 118}, "Vitre AR": {"compatible": null, "premium": 90, "original": null}, "Connecteur de charge": {"compatible": 56, "premium": null, "original": null}, "Camera AR": {"compatible": 92, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 15", "pieces": {"Ecran": {"compatible": 72, "premium": 101, "original": 193}, "Batterie": {"compatible": null, "premium": 64, "original": 115}, "Vitre AR": {"compatible": 65, "premium": 90, "original": null}, "Connecteur de charge": {"compatible": 58, "premium": null, "original": null}, "Camera AR": {"compatible": 71, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 15+", "pieces": {"Ecran": {"compatible": 73, "premium": 98, "original": 192}, "Batterie": {"compatible": null, "premium": 65, "original": 115}, "Vitre AR": {"compatible": 65, "premium": 83, "original": null}, "Connecteur de charge": {"compatible": 61, "premium": null, "original": null}, "Camera AR": {"compatible": 74, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 15 pro", "pieces": {"Ecran": {"compatible": 78, "premium": 102, "original": 234}, "Batterie": {"compatible": null, "premium": 66, "original": 115}, "Vitre AR": {"compatible": 69, "premium": 100, "original": null}, "Connecteur de charge": {"compatible": 61, "premium": null, "original": null}, "Camera AR": {"compatible": 93, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 15 pro max", "pieces": {"Ecran": {"compatible": 93, "premium": 101, "original": 243}, "Batterie": {"compatible": null, "premium": 68, "original": 115}, "Vitre AR": {"compatible": 69, "premium": 112, "original": null}, "Connecteur de charge": {"compatible": 62, "premium": null, "original": null}, "Camera AR": {"compatible": 97, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 16", "pieces": {"Ecran": {"compatible": 81, "premium": 105, "original": 212}, "Batterie": {"compatible": null, "premium": 61, "original": 118}, "Vitre AR": {"compatible": 73, "premium": 89, "original": null}, "Connecteur de charge": {"compatible": 61, "premium": null, "original": null}, "Camera AR": {"compatible": 87, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 16 plus", "pieces": {"Ecran": {"compatible": 82, "premium": 108, "original": 174}, "Batterie": {"compatible": null, "premium": 62, "original": 118}, "Vitre AR": {"compatible": 73, "premium": 89, "original": null}, "Connecteur de charge": {"compatible": 62, "premium": null, "original": null}, "Camera AR": {"compatible": 105, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 16 pro", "pieces": {"Ecran": {"compatible": 117, "premium": 152, "original": 263}, "Batterie": {"compatible": null, "premium": 63, "original": 132}, "Vitre AR": {"compatible": 71, "premium": 120, "original": null}, "Connecteur de charge": {"compatible": 59, "premium": null, "original": null}, "Camera AR": {"compatible": 89, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 16 pro max", "pieces": {"Ecran": {"compatible": 116, "premium": 129, "original": 303}, "Batterie": {"compatible": null, "premium": 64, "original": 132}, "Vitre AR": {"compatible": 71, "premium": 125, "original": null}, "Connecteur de charge": {"compatible": 61, "premium": null, "original": null}, "Camera AR": {"compatible": 94, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 16e", "pieces": {"Ecran": {"compatible": 70, "premium": 91, "original": 346}, "Batterie": {"compatible": null, "premium": null, "original": 115}, "Vitre AR": {"compatible": 63, "premium": null, "original": null}, "Connecteur de charge": {"compatible": 66, "premium": null, "original": null}, "Camera AR": {"compatible": 89, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 17", "pieces": {"Ecran": {"compatible": 146, "premium": 227, "original": 435}, "Vitre AR": {"compatible": 73, "premium": null, "original": null}, "Connecteur de charge": {"compatible": 105, "premium": null, "original": null}, "Camera AR": {"compatible": 110, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 17 PRO", "pieces": {"Ecran": {"compatible": 146, "premium": 172, "original": 435}, "Vitre AR": {"compatible": 62, "premium": null, "original": null}, "Connecteur de charge": {"compatible": 115, "premium": null, "original": null}, "Camera AR": {"compatible": 127, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone 17PRO MAX", "pieces": {"Ecran": {"compatible": 174, "premium": 192, "original": 496}, "Vitre AR": {"compatible": 62, "premium": null, "original": null}, "Connecteur de charge": {"compatible": 121, "premium": null, "original": null}, "Camera AR": {"compatible": 115, "premium": null, "original": null}}}, {"marque": "Apple", "modele": "iphone AIR", "pieces": {"Ecran": {"compatible": null, "premium": 269, "original": 462}, "Connecteur de charge": {"compatible": 102, "premium": null, "original": null}, "Camera AR": {"compatible": 129, "premium": null, "original": null}}}];
+let suggestions = [];
+function norm(s) {
+  return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,' ').replace(/\s+/g,' ').trim();
+}
+function fmt(v) { return v ? v + ' €' : null; }
+const input  = document.getElementById('ps66-input');
+const sugBox = document.getElementById('ps66-suggestions');
+const search = document.getElementById('ps66-search-page');
+const detail = document.getElementById('ps66-detail-page');
+function showSuggestions(query) {
+  const q = norm(query);
+  if (!q) { sugBox.innerHTML = ''; return; }
+  suggestions = ALL_DATA.filter(d => {
+    return q.split(' ').filter(Boolean).every(w => norm(d.marque+' '+d.modele).includes(w));
+  }).slice(0, 8);
+  if (!suggestions.length) { sugBox.innerHTML = ''; return; }
+  sugBox.innerHTML = suggestions.map((d, i) => {
+    const nb = Object.keys(d.pieces).length;
+    return `<div class="ps66-item" data-i="${i}">
+      <div class="ps66-item-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-linecap="round" stroke-width="2.5"/></svg></div>
+      <span class="ps66-item-name">${d.modele}</span>
+      <span class="ps66-item-count">${nb} réparation${nb>1?'s':''}</span>
+      <svg class="ps66-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>`;
+  }).join('');
+  sugBox.querySelectorAll('.ps66-item').forEach(el => {
+    el.addEventListener('click', () => openDetail(suggestions[+el.dataset.i]));
+  });
+}
+function openDetail(device) {
+  sugBox.innerHTML = '';
+  const pieces = Object.entries(device.pieces);
+  document.getElementById('ps66-title').textContent = device.modele;
+  document.getElementById('ps66-sub').textContent = pieces.length + ' réparation' + (pieces.length>1?'s':'') + ' disponible' + (pieces.length>1?'s':'');
+  const rows = document.getElementById('ps66-rows');
+  rows.innerHTML = '';
+  pieces.forEach(([name, prix], i) => {
+    const eco  = fmt(prix.compatible);
+    const prem = fmt(prix.premium);
+    const orig = fmt(prix.original);
+    const row  = document.createElement('div');
+    row.className = 'ps66-row';
+    row.style.animationDelay = (i*35)+'ms';
+    row.innerHTML = `<span class="ps66-row-name">${name}</span><span class="ps66-price ${eco?'eco':'na'}">${eco||'—'}</span><span class="ps66-price ${prem?'prime':'na'}">${prem||'—'}</span><span class="ps66-price ${orig?'original':'na'}">${orig||'—'}</span>`;
+    rows.appendChild(row);
+  });
+  search.style.display = 'none';
+  detail.style.display = 'block';
+}
+document.getElementById('ps66-back').addEventListener('click', () => {
+  detail.style.display = 'none';
+  search.style.display = 'block';
+  input.value = '';
+});
+input.addEventListener('input', e => showSuggestions(e.target.value));
+document.addEventListener('click', e => {
+  if (!e.target.closest('.ps66-search-box')) sugBox.innerHTML = '';
+});
+</script>
+</body>
+</html>
